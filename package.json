@@ -12,6 +12,15 @@
     "bugfix"
   ],
   "license": "MIT",
+  "author": "Ronael Moura",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronaelmoura/multer-safe-limit.git"
+  },
+  "homepage": "https://github.com/ronaelmoura/multer-safe-limit#readme",
+  "bugs": {
+    "url": "https://github.com/ronaelmoura/multer-safe-limit/issues"
+  },
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
