@@ -62,3 +62,15 @@ You can! That's exactly what this package does under the hood. It exists because
 ## License
 
 MIT
+
+## Engineering case: exact-limit uploads
+
+**Problem.** A file with exactly the configured maximum size should be accepted, while a larger file should still fail. The README's reproduction describes the boundary behavior this wrapper addresses.
+
+**Implementation.** [safeLimit](src/index.ts) gives Multer one additional byte of internal headroom, then checks the actual file sizes against the original limit. It preserves the `LIMIT_FILE_SIZE` error shape. The adapter handles the single-file object, arrays, and named-field collections; without a configured size limit, it returns the underlying Multer instance.
+
+**Trade-off.** Applying `fileSize + 1` alone would change the acceptance boundary. The second check is necessary. Keeping a small wrapper avoids maintaining a fork, but makes behavior dependent on Multer and the configured storage engine. These are design comparisons, not claims of an upstream contribution or adoption.
+
+**Evidence.** The [test directory](test) includes HTTP upload scenarios for files below, at, and above the limit and multiple upload methods. Run `npm ci` followed by `npm test` to reproduce the repository's suite. No new test execution or benchmark is claimed by this documentation change.
+
+**Limitations.** A size limit is not content validation or malware detection. Storage-engine cleanup, aggregate upload limits, and compatibility across every supported Multer version require separate verification; the included examples do not establish universal compatibility.
