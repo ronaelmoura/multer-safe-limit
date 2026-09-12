@@ -20,8 +20,11 @@ This is tracked upstream as [expressjs/multer#1348](https://github.com/expressjs
 
 ## Install
 
+Not on npm yet. Install straight from the repository — the `prepare` script
+builds it on install, so you get `dist/` without extra steps:
+
 ```bash
-npm install multer-safe-limit
+npm install github:ronaelmoura/multer-safe-limit
 ```
 
 `multer` and `express` are peer dependencies — install them if you don't already have them.
