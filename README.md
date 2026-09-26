@@ -1,22 +1,28 @@
-# multer-safe-limit
+# Multer Safe Limit
 
-Drop-in [Multer](https://github.com/expressjs/multer) wrapper that stops rejecting uploads at exactly the configured `fileSize` limit.
+Wrapper para [Multer](https://github.com/expressjs/multer) criado para tratar de forma previsível o limite exato de tamanho de arquivos em uploads.
 
-## The bug
+O projeto nasceu de um problema específico: arquivos exatamente no limite configurado podiam ser tratados de forma diferente do esperado no comportamento padrão do upload. A solução adiciona uma camada pequena de controle, sem exigir mudanças na API usada pela aplicação.
 
-Multer (via [busboy](https://github.com/mscdex/busboy)) fires its size-limit event as soon as a stream reaches exactly `limits.fileSize` bytes — it can't know in advance whether more data is coming. That means a file whose size is **exactly** the configured limit gets rejected with `LIMIT_FILE_SIZE`, even though it never exceeded it.
+## O que este projeto demonstra
 
-```js
-const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 } })
-// a file of exactly 10 MiB → rejected
-// a file of 10 MiB - 1 byte → accepted
-```
+- Investigação de comportamento de biblioteca
+- Manipulação de uploads e limites de arquivo
+- Compatibilidade com os modos de uso do Multer
+- Testes automatizados
+- Desenvolvimento de uma solução pequena e reutilizável
 
-This is tracked upstream as [expressjs/multer#1348](https://github.com/expressjs/multer/issues/1348). At the time of writing it's unresolved, with a few competing PRs open.
+## Por que criei isso?
 
-## The fix
+Nem todo problema de engenharia exige uma aplicação enorme. Uma inconsistência de limite em uma biblioteca pode gerar bugs difíceis de identificar; este projeto mostra como isolar, reproduzir, testar e transformar esse caso em uma solução reutilizável.
 
-`multer-safe-limit` wraps `multer()` with the same options you'd normally pass. Internally it asks multer for one extra byte of headroom, then re-checks the real uploaded size against the limit you configured. Anything over your limit still fails with the same `MulterError('LIMIT_FILE_SIZE')` your error handlers already expect; anything at or under it now succeeds.
+## O problema
+
+Multer (via [busboy](https://github.com/mscdex/busboy)) dispara o evento de limite assim que o stream alcança exatamente `limits.fileSize` bytes — antes de saber se haverá mais dados. Como consequência, um arquivo com o tamanho exato configurado pode receber `LIMIT_FILE_SIZE`.
+
+## A solução
+
+`multer-safe-limit` chama o Multer com um byte extra de margem interna e verifica novamente o tamanho real contra o limite configurado. Arquivos acima do limite continuam falhando com `MulterError('LIMIT_FILE_SIZE')`; arquivos no limite ou abaixo passam a ser aceitos.
 
 ## Install
 
